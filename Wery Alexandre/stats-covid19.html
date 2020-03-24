@@ -32,23 +32,6 @@
                 }
             }
 
-            var config0 = {
-                type: 'bar',
-                plugins: [ChartDataSource],
-                options: {
-                    plugins: {
-                        datasource: {
-                            type: 'csv',
-                            url: 'total_cases.csv',
-                            delimiter: ',',
-                            rowMapping: 'dataset',
-                            datasetLabels: true,
-                            indexLabels: true
-                        }
-                    }
-                }
-            };
-
             window.onload = function() {
                 var ctx = document.getElementById('cases').getContext('2d');
                 window.cases = new Chart(ctx, config);
