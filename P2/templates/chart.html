@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Statistiques INGINIOUS</title>
+</head>
+<body>
+    <style>
+    ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    border-radius: 15px;
+    }
+    
+    li {
+    float: left;
+    }
+    
+    li a{
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    }
+    
+    li a:hover:not(.active) {
+    background-color: #111;
+    }
+    </style>
+
+    <ul>
+        <li ><a href="#" onclick="rl('g1')">Bar</a></li>
+        <li ><a href="#" onclick="rl('g2')">Polar Area</a></li>
+        <li ><a href="#" onclick="rl('g3')">Pie</a></li>
+    </ul>
+
+    <div class="chart-container" style="position: relative; height:40vh; width:80vw;">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+
+        var rl=function(tag){
+            var url = window.location.href;
+            if(url.indexOf('#') > -1){
+                url=url.substring(0,url.indexOf('#')+1)+tag
+            }else{
+                url += '#'+tag
+            }
+            window.location.href = url;
+            window.location.reload();
+        }
+
+        var ctx = document.getElementById("myChart").getContext("2d");
+
+        if (!(window.location.href.includes('g2'))&&!(window.location.href.includes('g3'))){
+            var getd = $.get("/g1");
+            getd.done(function (avgtries) {
+                var myChart = new Chart(ctx, {
+                    type: "bar",
+                    title: "Bar",
+                    data: {
+                        labels: avgtries.avgtries.map(r => r.lbl),
+                        datasets: [{
+                            label: "Tentatives",
+                            data: avgtries.avgtries.map(r => r.val),
+                            backgroundColor: "orange"
+                        }
+                        ]
+                    }
+
+                });
+            })
+        }
+
+        var getd2 = $.get("/g23");
+        getd2.done(function (results) {
+            if(window.location.href.includes('g2')){
+                var myChart = new Chart(ctx, {
+                    type: "polarArea",
+                    title: "Polar Area",
+                    data: {
+                        labels: results.results.map(r => r.lbl),
+                        datasets: [{
+                            label: "Tentatives",
+                            data: results.results.map(r => r.val),
+                            backgroundColor: [
+                                "rgba(255, 0, 0, 0.2)",
+                                "rgba(0, 255, 0, 0.2)",
+                                "rgba(0, 0, 255, 0.2)"
+                            ],
+                            borderColor: [
+                                "rgba(255, 0, 0, 0.6)",
+                                "rgba(0, 255, 0, 0.6)",
+                                "rgba(0, 0, 255, 0.6)"
+                            ]
+                        }]
+                    }
+                });
+            }else if(window.location.href.includes('g3')){
+                var myChart = new Chart(ctx, {
+                    type: "pie",
+                    title: "Pie",
+                    data: {
+                        labels: results.results.map(r => r.lbl),
+                        datasets: [{
+                            label: "Tentatives",
+                            data: results.results.map(r => r.val),
+                            backgroundColor: [
+                                "red",
+                                "blue",
+                                "green"
+                            ]
+                        }]
+                    }
+
+                });
+            }
+        })
+    </script>
+</body>
+
+</html>
